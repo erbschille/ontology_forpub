@@ -439,7 +439,7 @@ object_info <- list(
     versions = list(
       US = 1,
       Ghana = 1,
-      Peru_Amazon = 2
+      Peru = 2
     )
   ), 
   dem = list(
@@ -456,7 +456,7 @@ object_info <- list(
     versions = list(
       US = 1, 
       Ghana = 1, 
-      Ecuador_Amazon = 1
+      Ecuador = 1
     )
   ),
   gvt = list(
@@ -472,7 +472,7 @@ object_info <- list(
     versions = list(
       US = 1, 
       Ghana = 1, 
-      Peru_Amazon = 2
+      Peru = 2
     )
   ),
   ghs = list(
@@ -488,8 +488,8 @@ object_info <- list(
     versions = list(
       US = 2, 
       Ghana = 2, 
-      Ecuador_Amazon = 2, 
-      Peru_Amazon = 1
+      Ecuador = 2, 
+      Peru = 1
     )
   ),
   god = list(
@@ -498,8 +498,8 @@ object_info <- list(
     versions = list(
       US = 2, 
       Ghana = 2, 
-      Ecuador_Amazon = 2, 
-      Peru_Amazon = 1
+      Ecuador = 2, 
+      Peru = 1
     )
   ),
   cnc = list(
@@ -508,8 +508,8 @@ object_info <- list(
     versions = list(
       US = 2, 
       Ghana = 2, 
-      Ecuador_Amazon = 2, 
-      Peru_Amazon = 1
+      Ecuador = 2, 
+      Peru = 1
     )
   ),
   hap = list(
@@ -544,92 +544,92 @@ object_info <- list(
     cols = c("spn_sens_ysh_1", "spn_sens_ysh_2", "spn_sens_ysh_3", "spn_sens_ysh_4", 
              "spn_sens_ysh_10", "spn_sens_ysh_5", "spn_sens_ysh_7"), 
     versions = list(
-      Peru_Amazon = 1
+      Peru = 1
     )
   ),
   par = list(
     cols = c("sci_sens_par_11", "sci_sens_par_12", "sci_sens_par_13", "sci_sens_par_14", 
              "sci_sens_par_16", "sci_sens_par_15", "sci_sens_par_6"), 
     versions = list(
-      Ecuador_Amazon = 1, 
-      Peru_Amazon = 1
+      Ecuador = 1, 
+      Peru = 1
     )
   ),
   njt = list(
     cols = c("fic_sens_njt_1", "fic_sens_njt_2", "fic_sens_njt_3", "fic_sens_njt_4", 
              "fic_sens_njt_10", "fic_sens_njt_5", "fic_sens_njt_7"), 
     versions = list(
-      Peru_Amazon = 1
+      Peru = 1
     )
   ),
   cha = list(
     cols = c("spn_sens_cha_1", "spn_sens_cha_2", "spn_sens_cha_3", "spn_sens_cha_4", 
              "spn_sens_cha_10", "spn_sens_cha_5", "spn_sens_cha_7"), 
     versions = list(
-      Peru_Amazon = 1
+      Peru = 1
     )
   ),
   ron = list(
     cols = c("nas_sens_ron_1", "nas_sens_ron_2", "nas_sens_ron_3", "nas_sens_ron_4", 
              "nas_sens_ron_10", "nas_sens_ron_5", "nas_sens_ron_7"), 
     versions = list(
-      Peru_Amazon = 2
+      Peru = 2
     )
   ),
   taz = list(
     cols = c("ord_sens_taz_1", "ord_sens_taz_2", "ord_sens_taz_3", "ord_sens_taz_4", 
              "ord_sens_taz_10", "ord_sens_taz_5", "ord_sens_taz_7"), 
     versions = list(
-      Peru_Amazon = 2
+      Peru = 2
     )
   ),
   oni = list(
     cols = c("spn_sens_oni_1", "spn_sens_oni_2", "spn_sens_oni_3", "spn_sens_oni_4", 
              "spn_sens_oni_10", "spn_sens_oni_5", "spn_sens_oni_7"), 
     versions = list(
-      Peru_Amazon = 2
+      Peru = 2
     )
   ),
   dlp = list(
     cols = c("nas_sens_dlp_1", "nas_sens_dlp_2", "nas_sens_dlp_3", "nas_sens_dlp_4", 
              "nas_sens_dlp_10", "nas_sens_dlp_5", "nas_sens_dlp_7"), 
     versions = list(
-      Peru_Amazon = 2
+      Peru = 2
     )
   ),
   flu = list(
     cols = c("sci_sens_flu_11", "sci_sens_flu_12", "sci_sens_flu_13", "sci_sens_flu_14", 
              "sci_sens_flu_16", "sci_sens_flu_15", "sci_sens_flu_6"), 
     versions = list(
-      Ecuador_Amazon = 1
+      Ecuador = 1
     )
   ),
   wen = list(
     cols = c("spn_sens_wen_1", "spn_sens_wen_2", "spn_sens_wen_3", "spn_sens_wen_4", 
              "spn_sens_wen_10", "spn_sens_wen_5", "spn_sens_wen_7"), 
     versions = list(
-      Ecuador_Amazon = 1
+      Ecuador = 1
     )
   ),
   spd = list(
     cols = c("fic_sens_spd_1", "fic_sens_spd_2", "fic_sens_spd_3", "fic_sens_spd_4", 
              "fic_sens_spd_10", "fic_sens_spd_5", "fic_sens_spd_7"), 
     versions = list(
-      Ecuador_Amazon = 1
+      Ecuador = 1
     )
   ),
   okw = list(
     cols = c("spn_sens_okw_1", "spn_sens_okw_2", "spn_sens_okw_3", "spn_sens_okw_4", 
              "spn_sens_okw_10", "spn_sens_okw_5", "spn_sens_okw_7"), 
     versions = list(
-      Ecuador_Amazon = 2
+      Ecuador = 2
     )
   ),
   ram = list(
     cols = c("fic_sens_ram_1", "fic_sens_ram_2", "fic_sens_ram_3", "fic_sens_ram_4", 
              "fic_sens_ram_10", "fic_sens_ram_5", "fic_sens_ram_7"), 
     versions = list(
-      Ecuador_Amazon = 2
+      Ecuador = 2
     )
   )
 )
@@ -677,7 +677,7 @@ object_info_usens <- list(
     versions = list(
       US = 1,
       Ghana = 1,
-      Peru_Amazon = 2
+      Peru = 2
     )
   ), 
   dem = list(
@@ -694,7 +694,7 @@ object_info_usens <- list(
     versions = list(
       US = 1, 
       Ghana = 1, 
-      Ecuador_Amazon = 1
+      Ecuador = 1
     )
   ),
   gvt = list(
@@ -710,7 +710,7 @@ object_info_usens <- list(
     versions = list(
       US = 1, 
       Ghana = 1, 
-      Peru_Amazon = 2
+      Peru = 2
     )
   ),
   ghs = list(
@@ -726,8 +726,8 @@ object_info_usens <- list(
     versions = list(
       US = 2, 
       Ghana = 2, 
-      Ecuador_Amazon = 2, 
-      Peru_Amazon = 1
+      Ecuador = 2, 
+      Peru = 1
     )
   ),
   god = list(
@@ -736,8 +736,8 @@ object_info_usens <- list(
     versions = list(
       US = 2, 
       Ghana = 2, 
-      Ecuador_Amazon = 2, 
-      Peru_Amazon = 1
+      Ecuador = 2, 
+      Peru = 1
     )
   ),
   cnc = list(
@@ -746,8 +746,8 @@ object_info_usens <- list(
     versions = list(
       US = 2, 
       Ghana = 2, 
-      Ecuador_Amazon = 2, 
-      Peru_Amazon = 1
+      Ecuador = 2, 
+      Peru = 1
     )
   ),
   hap = list(
@@ -782,92 +782,92 @@ object_info_usens <- list(
     cols = c("spn_usens_ysh_1", "spn_usens_ysh_2", "spn_usens_ysh_3", "spn_usens_ysh_4", 
              "spn_usens_ysh_10", "spn_usens_ysh_5", "spn_usens_ysh_7"), 
     versions = list(
-      Peru_Amazon = 1
+      Peru = 1
     )
   ),
   par = list(
     cols = c("sci_usens_par_1", "sci_usens_par_2", "sci_usens_par_3", "sci_usens_par_4", 
              "sci_usens_par_10", "sci_usens_par_5", "sci_usens_par_7"), 
     versions = list(
-      Ecuador_Amazon = 1, 
-      Peru_Amazon = 1
+      Ecuador = 1, 
+      Peru = 1
     )
   ),
   njt = list(
     cols = c("fic_usens_njt_1", "fic_usens_njt_2", "fic_usens_njt_3", "fic_usens_njt_4", 
              "fic_usens_njt_11", "fic_usens_njt_5", "fic_usens_njt_7"), 
     versions = list(
-      Peru_Amazon = 1
+      Peru = 1
     )
   ),
   cha = list(
     cols = c("spn_usens_cha_1", "spn_usens_cha_2", "spn_usens_cha_3", "spn_usens_cha_4", 
              "spn_usens_cha_10", "spn_usens_cha_5", "spn_usens_cha_7"), 
     versions = list(
-      Peru_Amazon = 1
+      Peru = 1
     )
   ),
   ron = list(
     cols = c("nas_usens_ron_1", "nas_usens_ron_2", "nas_usens_ron_3", "nas_usens_ron_4", 
              "nas_usens_ron_10", "nas_usens_ron_5", "nas_usens_ron_7"), 
     versions = list(
-      Peru_Amazon = 2
+      Peru = 2
     )
   ),
   taz = list(
     cols = c("ord_usens_taz_1", "ord_usens_taz_2", "ord_usens_taz_3", "ord_usens_taz_4", 
              "ord_usens_taz_10", "ord_usens_taz_5", "ord_usens_taz_7"), 
     versions = list(
-      Peru_Amazon = 2
+      Peru = 2
     )
   ),
   oni = list(
     cols = c("spn_usens_oni_1", "spn_usens_oni_2", "spn_usens_oni_3", "spn_usens_oni_4", 
              "spn_usens_oni_10", "spn_usens_oni_5", "spn_usens_oni_7"), 
     versions = list(
-      Peru_Amazon = 2
+      Peru = 2
     )
   ),
   dlp = list(
     cols = c("nas_usens_dlp_1", "nas_usens_dlp_2", "nas_usens_dlp_3", "nas_usens_dlp_4", 
              "nas_usens_dlp_10", "nas_usens_dlp_5", "nas_usens_dlp_7"), 
     versions = list(
-      Peru_Amazon = 2
+      Peru = 2
     )
   ),
   flu = list(
     cols = c("sci_usens_flu_1", "sci_usens_flu_2", "sci_usens_flu_3", "sci_usens_flu_4", 
              "sci_usens_flu_10", "sci_usens_flu_5", "sci_usens_flu_7"), 
     versions = list(
-      Ecuador_Amazon = 1
+      Ecuador = 1
     )
   ),
   wen = list(
     cols = c("spn_usens_wen_1", "spn_usens_wen_2", "spn_usens_wen_3", "spn_usens_wen_4", 
              "spn_usens_wen_10", "spn_usens_wen_5", "spn_usens_wen_7"), 
     versions = list(
-      Ecuador_Amazon = 1
+      Ecuador = 1
     )
   ),
   spd = list(
     cols = c("fic_usens_spd_1", "fic_usens_spd_2", "fic_usens_spd_3", "fic_usens_spd_4", 
              "fic_usens_spd_11", "fic_usens_spd_5", "fic_usens_spd_7"), 
     versions = list(
-      Ecuador_Amazon = 1
+      Ecuador = 1
     )
   ),
   okw = list(
     cols = c("spn_usens_okw_1", "spn_usens_okw_2", "spn_usens_okw_3", "spn_usens_okw_4", 
              "spn_usens_okw_10", "spn_usens_okw_5", "spn_usens_okw_7"), 
     versions = list(
-      Ecuador_Amazon = 2
+      Ecuador = 2
     )
   ),
   ram = list(
     cols = c("fic_usens_ram_1", "fic_usens_ram_2", "fic_usens_ram_3", "fic_usens_ram_4", 
              "fic_usens_ram_11", "fic_usens_ram_5", "fic_usens_ram_7"), 
     versions = list(
-      Ecuador_Amazon = 2
+      Ecuador = 2
     )
   )
 )

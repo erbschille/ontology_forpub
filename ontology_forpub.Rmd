@@ -34,7 +34,7 @@ library(emmeans)
 library(gtsummary)
 
 levels_type <- c("Ordinary", "Scientific", "Supernatural", "Fictional")
-levels_country <- c("US", "Ghana", "Ecuador_Amazon", "Peru_Amazon")
+levels_country <- c("US", "Ghana", "Ecuador", "Peru")
 ```
 
 ```{r}
@@ -49,8 +49,8 @@ df <- df_raw %>%
   mutate(ont_ctry_name = case_when(
     ont_ctry == 1 ~ "US",
     ont_ctry == 4 ~ "Ghana",
-    ont_ctry == 7 ~ "Peru_Amazon",
-    ont_ctry == 6 ~ "Ecuador_Amazon",
+    ont_ctry == 7 ~ "Peru",
+    ont_ctry == 6 ~ "Ecuador",
     TRUE ~ NA_character_ 
   )) %>%
   relocate(ont_ctry_name, .before = everything())
@@ -89,7 +89,7 @@ df_usens <- df %>%
 ```{r}
 # Note that this is the data frame in which many important variables are calculated, including the consensus score 
 df_ext_long <- df %>% 
-  filter(ont_ctry_name %in% c("US", "Ghana", "Ecuador_Amazon", "Peru_Amazon")) %>%
+  filter(ont_ctry_name %in% c("US", "Ghana", "Ecuador", "Peru")) %>%
   select(ont_ctry_name, ont_subj,
          sci_ext_grm, spn_ext_dem, ord_ext_mug, sci_ext_frc, fic_ext_smn,
          sci_ext_cnc, spn_ext_god, ord_ext_tbl, spn_ext_abs, fic_ext_kwk,
@@ -142,7 +142,7 @@ df_usens_long <- df_usens %>%
 
 # making long confidence df
 df_conf_long <- df %>% 
-  filter(ont_ctry_name %in% c("US", "Ghana", "Ecuador_Amazon", "Peru_Amazon")) %>%  
+  filter(ont_ctry_name %in% c("US", "Ghana", "Ecuador", "Peru")) %>%  
     select(ont_ctry_name, ont_subj,
            sci_conf.ext_grm, spn_conf.ext_dem, ord_conf.ext_mug, sci_conf.ext_gvt, fic_conf.ext_smn,
            sci_conf.ext_cnc, spn_conf.ext_god, ord_conf.ext_tbl, spn_conf.ext_ghs, fic_conf.ext_hap,  
@@ -228,7 +228,7 @@ df %>%
 #sex male = 1
 xtabs(~ ont_ctry_name + ont_sex, data = df)
 
-#ethnicity -- should do more on this
+#ethnicity 
 xtabs(~ tolower(ont_ethn) + ont_ctry_name, data = df)
 
 #education 
@@ -247,7 +247,7 @@ xtabs(~ ont_ctry_name + as.numeric(ont_ses), data = df)
 xtabs(~ ont_ctry_name + as.numeric(ont_affr), data = df)
 ```
 
-# Figure 1, Table 2 & Accompanying Analyses
+# Figure 1, Accompanying Analyses & Appendix C regression results
 
 The goal here is to combine confidence and existence scores. The confidence graph above shows people's confidence ratings regardless of whether they said the object existed or not. So, I will combine them this way:
 - if they said it doesn't exist *-1
@@ -274,45 +274,46 @@ df_ext_usens_conf <- df_ext_usens_conf %>%
       conf_dir == 2 ~ "Pretty sure exists",
       conf_dir == 3 ~ "Very sure exists"), 
     conf_dir_text = factor(conf_dir_text, 
-                           levels = c("Very sure exists", "Pretty sure exists", "Somewhat sure exists", "Not sure", "Somewhat sure doesn't exist", "Pretty sure doesn't exist", "Very sure doesn't exist"))
+                           levels = c("Very sure doesn't exist", "Pretty sure doesn't exist", "Somewhat sure doesn't exist", "Not sure", "Somewhat sure exists", "Pretty sure exists", "Very sure exists"))
     )
 ```
 
 Graphing Figure 1
 
 ```{r, fig.width=15}
-conf_colors <- rev(RColorBrewer::brewer.pal(7, "PuBu"))
+conf_colors <- (RColorBrewer::brewer.pal(7, "RdYlBu"))
 
 # Create stacked bar plot  
 df_ext_usens_conf %>% 
   filter(!is.na(conf_dir_text)) %>% 
-  mutate(category = factor(category, levels = c("Fictional", "Supernatural", "Scientific", "Ordinary"))) %>%
+  mutate(category = factor(category, levels = c("Ordinary", "Scientific", "Supernatural", "Fictional"))) %>%
   ggplot(aes(x = category, fill = conf_dir_text)) +  
   geom_bar(position = "fill") +  # Stacked proportions
-  geom_text(stat = "count", aes(label = after_stat(count)),   
-            position = position_fill(vjust = 0.5),   
-            size = 6, color = "white") +  
+  # geom_text(stat = "count", aes(label = after_stat(count)),
+  #           position = position_fill(vjust = 0.5),
+  #           size = 6, color = "white") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + 
   scale_fill_manual(values = conf_colors, drop = FALSE) + 
-  theme_minimal() +  
+  theme_bw() +  
   labs(
-    x = "",  
+    x = "Category of Objects",  
     y = "Proportion of Responses",  
     fill = "Confidence x Existence",  
-    title = "Confidence x Existence by Category and Country"
+    title = "Confidence x Existence by Category and Field Site"
   ) +
-  theme(axis.text.x = element_text(size = 14, angle = -35, vjust = -0.5),
-        axis.title.x = element_text(size = 15),
+  theme(axis.text.x = element_text(size = 15, angle = -35, vjust = 1, hjust = 0),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18),
         axis.text.y = element_text(size = 16),
         plot.title = element_text(size = 25), 
-        strip.text.x = element_text(size = 17), 
+        strip.text.x = element_text(size = 18), 
         legend.text = element_text(size = 16), 
         legend.title = element_text(size =18)) +
-  facet_wrap(~ ont_ctry_name, ncol = 4) +  # Separate plots for each country
-  coord_flip()  # Flipped bars for readability
+  facet_wrap(~ ont_ctry_name, ncol = 4)   # Separate plots for each country
 ```
 
-Models predicting confidence x existence scores by category with separate regressions for each country. The pairwise contrasts here showing scientific vs. supernatural are what make up Table 2. 
+
+Models predicting confidence x existence scores by category with separate regressions for each country. The pairwise contrasts here showing ordinary vs. supernatural and scientific vs. supernatural are what make up Table 2. Full results are reported in Appendix C. 
 
 ```{r}
 # 1 regression per country (4 total) where response is predicted by category
@@ -334,7 +335,7 @@ emm.ghana <- emmeans(m.ghana, ~ question_type)
 contrast(emm.ghana, method = "pairwise", adjust = "none")
 
 # Ecuador
-m.ecuador <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf, ont_ctry_name == "Ecuador_Amazon"))
+m.ecuador <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf, ont_ctry_name == "Ecuador"))
 summary(m.ecuador)
 
 ##pairwise contrasts
@@ -342,7 +343,7 @@ emm.ecuador <- emmeans(m.ecuador, ~ question_type)
 contrast(emm.ecuador, method = "pairwise", adjust = "none")
 
 # Peru
-m.peru <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf, ont_ctry_name == "Peru_Amazon"))
+m.peru <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf, ont_ctry_name == "Peru"))
 summary(m.peru)
 
 ##pairwise contrasts
@@ -380,13 +381,13 @@ summary(m.mug.ghana)
 
 # Ecuador --mugs, tables, god, Wene
 m.mug.ecuador <- lmer(conf_dir ~ question_type + (1|ont_subj), data = df_ext_usens_conf %>% 
-               filter(ont_ctry_name == "Ecuador_Amazon",
+               filter(ont_ctry_name == "Ecuador",
                       item_code %in% c("mug", "tbl", "wen", "god"))) #Wene instead of demon
 summary(m.mug.ecuador)
 
 # Peru --mugs, tables, god, Oni Ibo 
 m.mug.peru <- lmer(conf_dir ~ question_type + (1|ont_subj), data = df_ext_usens_conf %>% 
-               filter(ont_ctry_name == "Peru_Amazon",
+               filter(ont_ctry_name == "Peru",
                       item_code %in% c("taz", "tbl", "oni", "god")))
 summary(m.mug.peru)
 ```
@@ -395,7 +396,7 @@ summary(m.mug.peru)
 
 ```{r, fig.width=15}
 data_long_comm <- df %>%
-  filter(ont_ctry_name %in% c("US", "Ghana", "Ecuador_Amazon", "Peru_Amazon")) %>%  
+  filter(ont_ctry_name %in% c("US", "Ghana", "Ecuador", "Peru")) %>%  
     select(ont_ctry_name, ont_subj,
            sci_comu_grm, spn_comu_dem, ord_comu_mug, sci_comu_gvt, fic_comu_smn,
            sci_comu_cnc, spn_comu_god, ord_comu_tbl, spn_comu_ghs, fic_comu_hap,  
@@ -442,7 +443,7 @@ data_long_comm <- df %>%
                                  `0` = "No",
                                  `1` = "Yes",
                                  `0.5` = "IDK"),
-           response_txt = factor(response_txt, levels = c("Yes", "IDK", "No"))) %>%  
+           response_txt = factor(response_txt, levels = c("No", "IDK", "Yes"))) %>%  
     filter(!is.na(category))  
 
   # Compute avg per category  
@@ -456,36 +457,40 @@ data_long_comm <- df %>%
     left_join(cat_order, by = "category") %>%  
     mutate(category = fct_reorder(category, m))
   
-  conf_colors <- setNames(brewer.pal(3, "Set2"), 
-                          c("Yes", "IDK", "No"))
+   conf_colors <- setNames(brewer.pal(3, "RdYlBu"), 
+                           c("No", "IDK", "Yes"))
+  
+  # conf_colors <- setNames(c("#01665e","#5ab4ac","#8c510a"), 
+  #                         c("Yes", "IDK", "No"))
 
   # Create stacked bar plot  
 data_long_comm %>%
-  mutate(category = factor(category, levels = c("Fictional", "Supernatural", "Scientific", "Ordinary")), 
+  mutate(category = factor(category, levels = c("Ordinary", "Scientific", "Supernatural", "Fictional")), 
          ont_ctry_name = factor(ont_ctry_name, levels = levels_country)) %>%
   ggplot(aes(x = category, fill = response_txt)) +  
   geom_bar(position = "fill") +  # Stacked proportions
-  geom_text(stat = "count", aes(label = after_stat(count)),   
-            position = position_fill(vjust = 0.5),   
-            size = 6, color = "white") +  
+  # geom_text(stat = "count", aes(label = after_stat(count)),   
+  #           position = position_fill(vjust = 0.5),   
+  #           size = 6, color = "white") +  
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + 
   scale_fill_manual(values = conf_colors, drop = FALSE) + 
-  theme_minimal() +  
+  theme_bw() +  
   labs(
-    x = "",  
+    x = "Category of Objects",  
     y = "Proportion of Responses",  
     fill = "Responses",  
-    title = "Can people communicate with __?\nby Category and Country"
+    title = "Can people communicate with __? by Category and Field Site"
   ) +
-  theme(axis.text.x = element_text(size = 14, angle = -35, vjust = -0.5),  
-        axis.title.x = element_text(size = 15),
+  theme(axis.text.x = element_text(size = 15, angle = -35, vjust = 1, hjust = 0),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18),
         axis.text.y = element_text(size = 16),
         plot.title = element_text(size = 25), 
-        strip.text.x = element_text(size = 17), 
+        strip.text.x = element_text(size = 18), 
         legend.text = element_text(size = 16), 
         legend.title = element_text(size =18)) +
-  facet_wrap(~ ont_ctry_name, ncol = 4) +  # Separate plots for each country
-  coord_flip()  # Flipped bars for readability
+  facet_wrap(~ ont_ctry_name, ncol = 4)   # Separate plots for each country
+
 
 ```
 
@@ -511,7 +516,7 @@ emm.comm.ghana <- emmeans(m.comm.ghana, ~ category)
 contrast(emm.comm.ghana, method = "pairwise", adjust = "none")
 
 # Ecuador
-m.comm.ecuador <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_comm, ont_ctry_name == "Ecuador_Amazon"))
+m.comm.ecuador <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_comm, ont_ctry_name == "Ecuador"))
 summary(m.comm.ecuador)
 
 ##pairwise contrasts
@@ -519,7 +524,7 @@ emm.comm.ecuador <- emmeans(m.comm.ecuador, ~ category)
 contrast(emm.comm.ecuador, method = "pairwise", adjust = "none")
 
 # Peru
-m.comm.peru <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_comm, ont_ctry_name == "Peru_Amazon"))
+m.comm.peru <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_comm, ont_ctry_name == "Peru"))
 summary(m.comm.peru)
 
 ##pairwise contrasts
@@ -531,7 +536,7 @@ contrast(emm.comm.peru, method = "pairwise", adjust = "none")
 
 ```{r, fig.width=15}
 data_long_spec <- df %>%
-  filter(ont_ctry_name %in% c("US", "Ecuador_Amazon", "Peru_Amazon")) %>%  #question wasn't asked in ghana
+  filter(ont_ctry_name %in% c("US", "Ecuador", "Peru")) %>%  #question wasn't asked in ghana
     select(ont_ctry_name, ont_subj,
            sci_spexp_grm, spn_spexp_dem, ord_spexp_mug, sci_spexp_gvt, fic_spexp_smn,
            sci_spexp_cnc, spn_spexp_god, ord_spexp_tbl, spn_spexp_ghs, fic_spexp_hap,  
@@ -592,36 +597,39 @@ data_long_spec <- df %>%
     left_join(cat_order, by = "category") %>%  
     mutate(category = fct_reorder(category, m))
   
-  conf_colors <- setNames(brewer.pal(3, "Set2"), 
-                          c("Anyone", "IDK", "Only specific people"))
+  conf_colors <- setNames(brewer.pal(3, "RdYlBu"), 
+                           c("Anyone", "IDK", "Only specific people"))
+  
+  # conf_colors <- setNames(brewer.pal(3, "Set2"), 
+  #                         c("Anyone", "IDK", "Only specific people"))
 
   # Create stacked bar plot  
 data_long_spec %>%
-  mutate(category = factor(category, levels = c("Fictional", "Supernatural", "Scientific", "Ordinary")), 
+  mutate(category = factor(category, levels = c("Ordinary", "Scientific", "Supernatural", "Fictional")), 
          ont_ctry_name = factor(ont_ctry_name, levels = levels_country)) %>%
   ggplot(aes(x = category, fill = response_txt)) +  
   geom_bar(position = "fill") +  # Stacked proportions
-  geom_text(stat = "count", aes(label = after_stat(count)),   
-            position = position_fill(vjust = 0.5),   
-            size = 6, color = "white") +  
+  # geom_text(stat = "count", aes(label = after_stat(count)),   
+  #           position = position_fill(vjust = 0.5),   
+  #           size = 6, color = "white") +  
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + 
   scale_fill_manual(values = conf_colors, drop = FALSE) + 
-  theme_minimal() +  
+  theme_bw() +  
   labs(
-    x = "",  
+    x = "Category of Objects",  
     y = "Proportion of Responses",  
     fill = "Responses",  
-    title = "Can __ be experienced by anyone or only by specific people?\nby Category and Country"
+    title = "Can __ be experienced by anyone or only by specific people?\nby Category and Field Site"
   ) +
-  theme(axis.text.x = element_text(size = 14, angle = -35, vjust = -0.5),  
-         axis.title.x = element_text(size = 15),
+  theme(axis.text.x = element_text(size = 15, angle = -35, vjust = 1, hjust = 0),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18),
         axis.text.y = element_text(size = 16),
         plot.title = element_text(size = 25), 
-        strip.text.x = element_text(size = 17), 
+        strip.text.x = element_text(size = 18), 
         legend.text = element_text(size = 16), 
         legend.title = element_text(size =18)) +
-  facet_wrap(~ ont_ctry_name, ncol = 4) +  # Separate plots for each country
-  coord_flip()  # Flipped bars for readability
+  facet_wrap(~ ont_ctry_name, ncol = 4)  # Separate plots for each country
 ```
 
 Models predicting "Can X be experienced by anyone or only by specific people?" responses by category. The pairwise contrasts from these models are reported in the manuscript under the section "Additional Questions Reflect Differences in Epistemic Frames"
@@ -638,7 +646,7 @@ emm.spec.us <- emmeans(m.spec.us, ~ category)
 contrast(emm.spec.us, method = "pairwise", adjust = "none")
 
 # Ecuador
-m.spec.ecuador <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_spec, ont_ctry_name == "Ecuador_Amazon"))
+m.spec.ecuador <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_spec, ont_ctry_name == "Ecuador"))
 summary(m.spec.ecuador)
 
 ##pairwise contrasts
@@ -646,7 +654,7 @@ emm.spec.ecuador <- emmeans(m.spec.ecuador, ~ category)
 contrast(emm.spec.ecuador, method = "pairwise", adjust = "none")
 
 # Peru
-m.spec.peru <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_spec, ont_ctry_name == "Peru_Amazon"))
+m.spec.peru <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_spec, ont_ctry_name == "Peru"))
 summary(m.spec.peru)
 
 ##pairwise contrasts
@@ -662,7 +670,7 @@ Can __ be sensed? This combines across all sensory questions for each item. The 
 ```{r, fig.width=12}
 # Combine all country data
 combined_sens <- df_sens %>%
-  filter(ont_ctry_name %in% c("US", "Ghana", "Ecuador_Amazon", "Peru_Amazon")) %>%
+  filter(ont_ctry_name %in% c("US", "Ghana", "Ecuador", "Peru")) %>%
   select(ont_ctry_name, 
          sens_grm, sens_dem, sens_mug, sens_frc, sens_smn,
          sens_cnc, sens_god, sens_tbl, sens_abs, sens_kwk,
@@ -728,16 +736,16 @@ combined_sens %>%
   scale_fill_brewer(palette = "Set2", name = "Question Type") +
   theme_bw() +
   geom_text(aes(label = scales::percent(proportion_yes, accuracy = 1)),
-            position = position_dodge(width = 0.8), vjust = 2, size = 5) +
+            position = position_dodge(width = 0.8), vjust = 2, size = 4) +
   labs(
-    title = "Can __ be sensed?: Proportion of 'Yes' Responses by Country",
-    x = "Country",
-    y = "Proportion of 'Yes' Responses"
+    title = "Can __ be sensed?: Proportion of 'Yes' Responses by Field Site",
+    x = "Field Site",
+    y = "Collated 'Yes' Responses to Sense Questions"
   ) + 
   theme(axis.text.x = element_text(size = 14),
-        axis.title.x = element_text(size = 15),
+        axis.title.x = element_text(size = 18),
         axis.text.y = element_text(size = 16),
-        axis.title.y = element_text(size = 15),
+        axis.title.y = element_text(size = 18),
         plot.title = element_text(size = 23), 
         strip.text.x = element_text(size = 17), 
         legend.text = element_text(size = 16), 
@@ -750,7 +758,7 @@ combined_sens %>%
 ```{r, fig.width=12}
 # Combine all country data
 combined_usens <- df_usens %>%
-  filter(ont_ctry_name %in% c("US", "Ghana", "Ecuador_Amazon", "Peru_Amazon")) %>%
+  filter(ont_ctry_name %in% c("US", "Ghana", "Ecuador", "Peru")) %>%
   select(ont_ctry_name, 
          usens_grm, usens_dem, usens_mug, usens_frc, usens_smn,
          usens_cnc, usens_god, usens_tbl, usens_abs, usens_kwk,
@@ -818,16 +826,16 @@ combined_usens %>%
   scale_fill_brewer(palette = "Set2", name = "Question Type") +
   theme_bw() +
   geom_text(aes(label = scales::percent(proportion_yes, accuracy = 1)),
-            position = position_dodge(width = 0.8), vjust = 2, size = 5) +
+            position = position_dodge(width = 0.8), vjust = 2, size = 4) +
   labs(
-    title = "Have you ever sensed __?: Proportion of 'Yes' Responses by Country",
-    x = "Country",
-    y = "Proportion of 'Yes' Responses"
+    title = "Have you ever sensed __?: Proportion of 'Yes' Responses by Field Site",
+    x = "Field Site",
+    y = "Collated 'Yes' Responses to Sense Questions"
   ) + 
   theme(axis.text.x = element_text(size = 14),
-        axis.title.x = element_text(size = 15),
+        axis.title.x = element_text(size = 18),
         axis.text.y = element_text(size = 16),
-        axis.title.y = element_text(size = 15),
+        axis.title.y = element_text(size = 18),
         plot.title = element_text(size = 23), 
         strip.text.x = element_text(size = 17), 
         legend.text = element_text(size = 16), 
@@ -852,6 +860,148 @@ m.conf %>%
     tbl_regression(intercept = TRUE) %>% 
     as_gt() %>% 
     gt::tab_header(title = "Regression Results: Effects of Consensus and Sensory Evidence on Confidence")
+```
+
+
+# ALTERNATE CODING & FIG 1 et al
+
+```{r}
+df_ext_usens_conf_ALT <- df_ext_usens_conf %>% 
+  mutate(ext_dir = case_when(
+    response == 1 ~ 1,
+    response == 0 ~ -1,
+    response == 0.5 ~ 0,
+    TRUE ~ response), 
+    ext_label = case_when(
+      ext_dir == 1 ~ "exist",
+      ext_dir == -1 ~ "not", 
+      ext_dir == 0 ~ "unsure"),
+    conf_dir = case_when(
+      ext_label == "exist" ~ ext_dir + conf_response,
+      ext_label == "not" ~ ext_dir - conf_response,
+      ext_label == "unsure" ~ 0),
+    conf_dir_text = case_when(
+      conf_dir == -4 ~ "Very sure doesn't exist",
+      conf_dir == -3 ~ "Pretty sure doesn't exist",
+      conf_dir == -2 ~ "Somewhat sure doesn't exist",
+      conf_dir == -1 ~ "Not sure doesn't exist",
+      conf_dir == 0 ~ "Not sure",
+      conf_dir == 1 ~ "Not sure exists",
+      conf_dir == 2 ~ "Somewhat sure exists",
+      conf_dir == 3 ~ "Pretty sure exists",
+      conf_dir == 4 ~ "Very sure exists"), 
+    conf_dir_text = factor(conf_dir_text, 
+                           levels = c("Very sure doesn't exist", "Pretty sure doesn't exist", "Somewhat sure doesn't exist", "Not sure doesn't exist", "Not sure", "Not sure exists", "Somewhat sure exists", "Pretty sure exists", "Very sure exists"))
+  )
+```
+
+```{r, fig.width=15}
+conf_colors <- (RColorBrewer::brewer.pal(9, "RdYlBu"))
+
+# Create stacked bar plot  
+df_ext_usens_conf_ALT %>% 
+  filter(!is.na(conf_dir_text), !is.na(category)) %>% 
+  mutate(category = factor(category, levels = c("Ordinary", "Scientific", "Supernatural", "Fictional"))) %>%
+  ggplot(aes(x = category, fill = conf_dir_text)) +  
+  geom_bar(position = "fill") +  # Stacked proportions
+  # geom_text(stat = "count", aes(label = after_stat(count)),   
+  #           position = position_fill(vjust = 0.5),   
+  #           size = 6, color = "white") +  
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + 
+  scale_fill_manual(values = conf_colors, drop = FALSE) + 
+  theme_bw() +  
+  labs(
+    x = "Category of Objects",  
+    y = "Proportion of Responses",  
+    fill = "Confidence x Existence",  
+    title = "Confidence x Existence by Category and Country"
+  ) +
+  theme(axis.text.x = element_text(size = 15, angle = -35, vjust = 1, hjust = 0),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18),
+        axis.text.y = element_text(size = 16),
+        plot.title = element_text(size = 25), 
+        strip.text.x = element_text(size = 18), 
+        legend.text = element_text(size = 16), 
+        legend.title = element_text(size =18)) +
+  facet_wrap(~ ont_ctry_name, ncol = 4)   # Separate plots for each country
+```
+
+```{r}
+# 1 regression per country (4 total) where response is predicted by category
+
+# US
+m.us <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf_ALT, ont_ctry_name == "US"))
+summary(m.us)
+
+##pairwise contrasts
+emm.us <- emmeans(m.us, ~ question_type)
+contrast(emm.us, method = "pairwise", adjust = "none")
+
+# Ghana
+m.ghana <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf_ALT, ont_ctry_name == "Ghana"))
+summary(m.ghana)
+
+##pairwise contrasts
+emm.ghana <- emmeans(m.ghana, ~ question_type)
+contrast(emm.ghana, method = "pairwise", adjust = "none")
+
+# Ecuador
+m.ecuador <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf_ALT, ont_ctry_name == "Ecuador"))
+summary(m.ecuador)
+
+##pairwise contrasts
+emm.ecuador <- emmeans(m.ecuador, ~ question_type)
+contrast(emm.ecuador, method = "pairwise", adjust = "none")
+
+# Peru
+m.peru <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf_ALT, ont_ctry_name == "Peru"))
+summary(m.peru)
+
+##pairwise contrasts
+emm.peru <- emmeans(m.peru, ~ question_type)
+contrast(emm.peru, method = "pairwise", adjust = "none")
+
+```
+
+Model predicting confidence x existence scores by category pooling across non-US countries. These results show that when you combine all non-US country responses together, the difference between ordinary and supernatural confidence ratings are significant. 
+
+```{r}
+#combinging non us countries
+m.non.us <- lmer(conf_dir ~ question_type + (1|ont_ctry_name/ont_subj), data = filter(df_ext_usens_conf_ALT, ont_ctry_name != "US"))
+summary(m.non.us)
+
+##pairwise contrasts
+emm.non.us <- emmeans(m.non.us, ~ question_type)
+contrast(emm.non.us, method = "pairwise", adjust = "none")
+```
+
+Model predicting confidence x existence scores by category, but only for highest contrast ordinary vs. supernatural items (coffee cups & tables vs. God & demons). These results show that these highest contrasts are significantly different in the US and Ghana, but not in Ecuador and Peru (in Ecuador, our smallest sample size, there are hints that this effect might be found in future similar studies). See Appendix A for full confidence and existence ratings broken down by item, version, and country. 
+
+```{r}
+# US --mugs, tables, god, demons
+m.mug.us <- lmer(conf_dir ~ question_type + (1|ont_subj), data = df_ext_usens_conf_ALT %>% 
+               filter(ont_ctry_name == "US",
+                      item_code %in% c("mug", "tbl", "dem", "god")))
+summary(m.mug.us)
+
+# Ghana --mugs, tables, god, demons
+m.mug.ghana <- lmer(conf_dir ~ question_type + (1|ont_subj), data = df_ext_usens_conf_ALT %>% 
+               filter(ont_ctry_name == "Ghana",
+                      item_code %in% c("mug", "tbl", "dem", "god")))
+summary(m.mug.ghana)
+
+# Ecuador --mugs, tables, god, Wene
+m.mug.ecuador <- lmer(conf_dir ~ question_type + (1|ont_subj), data = df_ext_usens_conf_ALT %>% 
+               filter(ont_ctry_name == "Ecuador",
+                      item_code %in% c("mug", "tbl", "wen", "god"))) #Wene instead of demon
+summary(m.mug.ecuador)
+
+# Peru --mugs, tables, god, Oni Ibo 
+m.mug.peru <- lmer(conf_dir ~ question_type + (1|ont_subj), data = df_ext_usens_conf_ALT %>% 
+               filter(ont_ctry_name == "Peru",
+                      item_code %in% c("taz", "tbl", "oni", "god")))
+summary(m.mug.peru)
 ```
 
 # Appendix A: Responses by object, version, and country
@@ -1007,7 +1157,7 @@ gh_data_combined %>%
 
 ```{r}
 # Version 1 -- 10 participants 
-exist_bar(country = "Ecuador_Amazon", version = 1, 
+exist_bar(country = "Ecuador", version = 1, 
           cols = c("sci_ext_flu", "spn_ext_wen", "ord_ext_mug", "sci_ext_par", "fic_ext_spd"), 
           col_names = c("sci_ext_flu" = "Daicawo (flu)",
                            "spn_ext_wen" = "Wene (demon/forest god)",
@@ -1018,7 +1168,7 @@ exist_bar(country = "Ecuador_Amazon", version = 1,
           data = df)
 
 # Version 2 -- 10 participants
-exist_bar(country = "Ecuador_Amazon", version = 2, 
+exist_bar(country = "Ecuador", version = 2, 
           cols = c("sci_ext_cnc", "spn_ext_god", "ord_ext_tbl", "spn_ext_okw", "fic_ext_ram"), 
           col_names = c("sci_ext_cnc" = "Cancer",
                            "spn_ext_god" = "God",
@@ -1031,7 +1181,7 @@ exist_bar(country = "Ecuador_Amazon", version = 2,
 #----------------------
 ## BOTH VERSIONS COMBINED BY QUESTION TYPE 
 ec_data_combined <- df %>%
-  filter(ont_ctry_name == "Ecuador_Amazon") %>%
+  filter(ont_ctry_name == "Ecuador") %>%
   select(sci_ext_flu, spn_ext_wen, ord_ext_mug, sci_ext_par, fic_ext_spd,
          sci_ext_cnc, spn_ext_god, ord_ext_tbl, spn_ext_okw, fic_ext_ram) %>%
   mutate(across(everything(), as.numeric)) %>%
@@ -1078,7 +1228,7 @@ ec_data_combined %>%
 
 ```{r}
 # Version 1 -- 21 participants
-exist_bar(country = "Peru_Amazon", version = 1, 
+exist_bar(country = "Peru", version = 1, 
           cols = c("spn_ext_ysh", "sci_ext_par", "spn_ext_god", "ord_ext_tbl", "fic_ext_njt", "spn_ext_cha", "sci_ext_cnc"), 
           col_names = c("spn_ext_ysh" = "Mahua Yoshin\n(bad spirit)",  
                         "sci_ext_par" = "Intestinal Parasites",  
@@ -1092,7 +1242,7 @@ exist_bar(country = "Peru_Amazon", version = 1,
 
 
 # Version 2 -- 19 participants
-exist_bar(country = "Peru_Amazon", version = 2, 
+exist_bar(country = "Peru", version = 2, 
           cols = c("sci_ext_grm", "nas_ext_ron", "ord_ext_taz", "spn_ext_oni", "fic_ext_smn", "nas_ext_dlp"), 
           col_names = c("sci_ext_grm" = "Germs", 
                            "nas_ext_ron" = "Ronin\n(Anaconda)",
@@ -1108,7 +1258,7 @@ exist_bar(country = "Peru_Amazon", version = 2,
 # BOTH VERSIONS COMBINED
 
 peru_data_combined <- df %>%
-  filter(ont_ctry_name == "Peru_Amazon") %>%
+  filter(ont_ctry_name == "Peru") %>%
   select(spn_ext_ysh, sci_ext_par, spn_ext_god, ord_ext_tbl, fic_ext_njt, spn_ext_cha, sci_ext_cnc,
          sci_ext_grm, nas_ext_ron, ord_ext_taz, spn_ext_oni, fic_ext_smn, nas_ext_dlp) %>%
   mutate(across(everything(), as.numeric)) %>%
@@ -1251,7 +1401,7 @@ conf_bar_by_existence(
 ```{r, fig.asp = 0.5}
 # V1 10 participants 
 conf_bar_by_existence(
-  country = "Ecuador_Amazon",
+  country = "Ecuador",
   version = 1,
   conf_cols = c(
     "sci_conf.ext_flu", "spn_conf.ext_wen", "ord_conf.ext_mug", "sci_conf.ext_par", "fic_conf.ext_spd"
@@ -1271,7 +1421,7 @@ conf_bar_by_existence(
 
 # V2 10 participants
 conf_bar_by_existence(
-  country = "Ecuador_Amazon",
+  country = "Ecuador",
   version = 2,
   conf_cols = c(
     "sci_conf.ext_cnc", "spn_conf.ext_god", "ord_conf.ext_tbl", "spn_conf.ext_okw", "fic_conf.ext_ram"
@@ -1296,7 +1446,7 @@ conf_bar_by_existence(
 ```{r, fig.asp = 0.5}
 # V1 -- 21 participants
 conf_bar_by_existence(
-  country = "Peru_Amazon",
+  country = "Peru",
   version = 1,
   conf_cols = c(
     "spn_conf.ext_ysh", "sci_conf.ext_par", "spn_conf.ext_god", "ord_conf.ext_tbl", "fic_conf.ext_njt", 
@@ -1320,7 +1470,7 @@ conf_bar_by_existence(
 
 # V2 -- 19 participants
 conf_bar_by_existence(
-  country = "Peru_Amazon",
+  country = "Peru",
   version = 2,
   conf_cols = c(
     "sci_conf.ext_grm", "nas_conf.ext_ron", "ord_conf.ext_taz", "spn_conf.ext_oni", "fic_conf.ext_smn", "nas_conf.ext_dlp"
@@ -1428,7 +1578,7 @@ yn_by_category(country = "Ghana",
 
 ```{r}
 # Version 1 -- 10 participants 
-yn_stacked_bar(country = "Ecuador_Amazon", version = 1, 
+yn_stacked_bar(country = "Ecuador", version = 1, 
                  cols = c("sci_comu_flu", "spn_comu_wen", "ord_comu_mug", "sci_comu_par", "fic_comu_spd"), 
                  col_names = c("sci_comu_flu" = "Daicawo (flu)",
                            "spn_comu_wen" = "Wene\n(demon/forest god)",
@@ -1438,7 +1588,7 @@ yn_stacked_bar(country = "Ecuador_Amazon", version = 1,
                  title = "Ecuadorian Amazon V1: Can people communicate with __?")
 
 # Version 2 -- 10 participants
-yn_stacked_bar(country = "Ecuador_Amazon", version = 2, 
+yn_stacked_bar(country = "Ecuador", version = 2, 
                  cols = c("sci_comu_cnc", "spn_comu_god", "ord_comu_tbl", "spn_comu_okw", "fic_comu_ram"), 
                  col_names = c("sci_comu_cnc" = "Cancer",
                            "spn_comu_god" = "God",
@@ -1448,7 +1598,7 @@ yn_stacked_bar(country = "Ecuador_Amazon", version = 2,
                  title = "Ecuadorian Amazon V2: Can people communicate with __?")
 
 # Both versions together
-yn_by_category(country = "Ecuador_Amazon", 
+yn_by_category(country = "Ecuador", 
                  cols = c("sci_comu_flu", "spn_comu_wen", "ord_comu_mug", "sci_comu_par", "fic_comu_spd",
                           "sci_comu_cnc", "spn_comu_god", "ord_comu_tbl", "spn_comu_okw", "fic_comu_ram"),
                  category_mapping = c("sci_comu_flu" = "Scientific",
@@ -1469,7 +1619,7 @@ yn_by_category(country = "Ecuador_Amazon",
 
 ```{r}
 # Version 1 -- 21 participants
-yn_stacked_bar(country = "Peru_Amazon", version = 1, 
+yn_stacked_bar(country = "Peru", version = 1, 
                  cols = c("spn_comu_ysh", "sci_comu_par", "spn_comu_god", "ord_comu_tbl", 
                           "fic_comu_njt", "spn_comu_cha", "sci_comu_cnc"), 
                  col_names = c("spn_comu_ysh" = "Mahua Yoshin\n(bad spirit)",  
@@ -1482,7 +1632,7 @@ yn_stacked_bar(country = "Peru_Amazon", version = 1,
                  title = "Peruvian Amazon V1: Can people communicate with __?")
 
 # Version 2 -- 19 participants
-yn_stacked_bar(country = "Peru_Amazon", version = 2, 
+yn_stacked_bar(country = "Peru", version = 2, 
                  cols = c("sci_comu_grm", "nas_comu_ron", "ord_comu_taz", "spn_comu_oni", 
                           "fic_comu_smn", "nas_comu_dlp"), 
                  col_names = c("sci_comu_grm" = "Germs", 
@@ -1494,7 +1644,7 @@ yn_stacked_bar(country = "Peru_Amazon", version = 2,
                  title = "Peruvian Amazon V2: Can people communicate with __?")
 
 # Both versions together
-yn_by_category(country = "Peru_Amazon", 
+yn_by_category(country = "Peru", 
                  cols = c("spn_comu_ysh", "sci_comu_par", "spn_comu_god", "ord_comu_tbl", 
                           "fic_comu_njt", "spn_comu_cha", "sci_comu_cnc",
                           "sci_comu_grm", "nas_comu_ron", "ord_comu_taz", "spn_comu_oni", 
@@ -1566,7 +1716,7 @@ This question was not asked in Ghana
 
 ```{r}
 # Version 1 -- 10 participants 
-spexp_stacked_bar(country = "Ecuador_Amazon", version = 1, 
+spexp_stacked_bar(country = "Ecuador", version = 1, 
                  cols = c("sci_spexp_flu", "spn_spexp_wen", "ord_spexp_mug", "sci_spexp_par", "fic_spexp_spd"), 
                  col_names = c("sci_spexp_flu" = "Daicawo (flu)",
                            "spn_spexp_wen" = "Wene\n(demon/forest god)",
@@ -1576,7 +1726,7 @@ spexp_stacked_bar(country = "Ecuador_Amazon", version = 1,
                  title = "Ecuadorian Amazon V1: Can __ be experienced by anyone or only by specific people?")
 
 # Version 2 -- 10 participants
-spexp_stacked_bar(country = "Ecuador_Amazon", version = 2, 
+spexp_stacked_bar(country = "Ecuador", version = 2, 
                  cols = c("sci_spexp_cnc", "spn_spexp_god", "ord_spexp_tbl", "spn_spexp_okw", "fic_spexp_ram"), 
                  col_names = c("sci_spexp_cnc" = "Cancer",
                            "spn_spexp_god" = "God",
@@ -1586,7 +1736,7 @@ spexp_stacked_bar(country = "Ecuador_Amazon", version = 2,
                  title = "Ecuadorian Amazon V2: Can __ be experienced by anyone or only by specific people?")
 
 # Both versions together
-spexp_by_category(country = "Ecuador_Amazon", 
+spexp_by_category(country = "Ecuador", 
                  cols = c("sci_spexp_flu", "spn_spexp_wen", "ord_spexp_mug", "sci_spexp_par", "fic_spexp_spd",
                           "sci_spexp_cnc", "spn_spexp_god", "ord_spexp_tbl", "spn_spexp_okw", "fic_spexp_ram"),
                  category_mapping = c("sci_spexp_flu" = "Scientific",
@@ -1607,7 +1757,7 @@ spexp_by_category(country = "Ecuador_Amazon",
 
 ```{r}
 # Version 1 -- 21 participants
-spexp_stacked_bar(country = "Peru_Amazon", version = 1, 
+spexp_stacked_bar(country = "Peru", version = 1, 
                  cols = c("spn_spexp_ysh", "sci_spexp_par", "spn_spexp_god", "ord_spexp_tbl", 
                           "fic_spexp_njt", "spn_spexp_cha", "sci_spexp_cnc"), 
                  col_names = c("spn_spexp_ysh" = "Mahua Yoshin\n(bad spirit)",  
@@ -1620,7 +1770,7 @@ spexp_stacked_bar(country = "Peru_Amazon", version = 1,
                  title = "Peruvian Amazon V1: Can __ be experienced by anyone or only by specific people?")
 
 # Version 2 -- 19 participants
-spexp_stacked_bar(country = "Peru_Amazon", version = 2, 
+spexp_stacked_bar(country = "Peru", version = 2, 
                  cols = c("sci_spexp_grm", "nas_spexp_ron", "ord_spexp_taz", "spn_spexp_oni", 
                           "fic_spexp_smn", "nas_spexp_dlp"), 
                  col_names = c("sci_spexp_grm" = "Germs", 
@@ -1632,7 +1782,7 @@ spexp_stacked_bar(country = "Peru_Amazon", version = 2,
                  title = "Peruvian Amazon V2: Can __ be experienced by anyone or only by specific people?")
 
 # Both versions together
-spexp_by_category(country = "Peru_Amazon", 
+spexp_by_category(country = "Peru", 
                  cols = c("spn_spexp_ysh", "sci_spexp_par", "spn_spexp_god", "ord_spexp_tbl", 
                           "fic_spexp_njt", "spn_spexp_cha", "sci_spexp_cnc",
                           "sci_spexp_grm", "nas_spexp_ron", "ord_spexp_taz", "spn_spexp_oni", 
@@ -1803,7 +1953,7 @@ gh_sens_combined %>%
 
 ```{r}
 # Version 1 -- 10 participants 
-exist_bar(country = "Ecuador_Amazon", version = 1, 
+exist_bar(country = "Ecuador", version = 1, 
           cols = c("sens_flu", "sens_wen", "sens_mug", "sens_par", "sens_spd"), 
           col_names = c("sens_flu" = "Daicawo (flu)",
                            "sens_wen" = "Wene (demon/forest god)",
@@ -1814,7 +1964,7 @@ exist_bar(country = "Ecuador_Amazon", version = 1,
           data = df_sens)
 
 # Version 2 -- 10 participants
-exist_bar(country = "Ecuador_Amazon", version = 2, 
+exist_bar(country = "Ecuador", version = 2, 
           cols = c("sens_cnc", "sens_god", "sens_tbl", "sens_okw", "sens_ram"), 
           col_names = c("sens_cnc" = "Cancer",
                            "sens_god" = "God",
@@ -1827,7 +1977,7 @@ exist_bar(country = "Ecuador_Amazon", version = 2,
 #----------------------
 ## BOTH VERSIONS COMBINED BY QUESTION TYPE 
 ec_sens_combined <- df_sens %>%
-  filter(ont_ctry_name == "Ecuador_Amazon") %>%
+  filter(ont_ctry_name == "Ecuador") %>%
   select(sens_flu, sens_wen, sens_mug, sens_par, sens_spd,
          sens_cnc, sens_god, sens_tbl, sens_okw, sens_ram) %>%
   mutate(across(everything(), as.numeric)) %>%
@@ -1874,7 +2024,7 @@ ec_sens_combined %>%
 
 ```{r}
 # Version 1 -- 21 participants
-exist_bar(country = "Peru_Amazon", version = 1, 
+exist_bar(country = "Peru", version = 1, 
           cols = c("sens_ysh", "sens_par", "sens_god", "sens_tbl", "sens_njt", "sens_cha", "sens_cnc"), 
           col_names = c("sens_ysh" = "Mahua Yoshin\n(bad spirit)",  
                         "sens_par" = "Intestinal Parasites",  
@@ -1888,7 +2038,7 @@ exist_bar(country = "Peru_Amazon", version = 1,
 
 
 # Version 2 -- 19 participants
-exist_bar(country = "Peru_Amazon", version = 2, 
+exist_bar(country = "Peru", version = 2, 
           cols = c("sens_grm", "sens_ron", "sens_taz", "sens_oni", "sens_smn", "sens_dlp"), 
           col_names = c("sens_grm" = "Germs", 
                            "sens_ron" = "Ronin\n(Anaconda)",
@@ -1904,7 +2054,7 @@ exist_bar(country = "Peru_Amazon", version = 2,
 # BOTH VERSIONS COMBINED
 
 peru_sens_combined <- df_sens %>%
-  filter(ont_ctry_name == "Peru_Amazon") %>%
+  filter(ont_ctry_name == "Peru") %>%
   select(sens_ysh, sens_par, sens_god, sens_tbl, sens_njt, sens_cha, sens_cnc,
          sens_grm, sens_ron, sens_taz, sens_oni, sens_smn, sens_dlp) %>%
   mutate(across(everything(), as.numeric)) %>%
@@ -2099,7 +2249,7 @@ gh_usens_combined %>%
 
 ```{r}
 # Version 1 -- 10 participants 
-exist_bar(country = "Ecuador_Amazon", version = 1, 
+exist_bar(country = "Ecuador", version = 1, 
           cols = c("usens_flu", "usens_wen", "usens_mug", "usens_par", "usens_spd"), 
           col_names = c("usens_flu" = "Daicawo (flu)",
                            "usens_wen" = "Wene (demon/forest god)",
@@ -2110,7 +2260,7 @@ exist_bar(country = "Ecuador_Amazon", version = 1,
           data = df_usens)
 
 # Version 2 -- 10 participants
-exist_bar(country = "Ecuador_Amazon", version = 2, 
+exist_bar(country = "Ecuador", version = 2, 
           cols = c("usens_cnc", "usens_god", "usens_tbl", "usens_okw", "usens_ram"), 
           col_names = c("usens_cnc" = "Cancer",
                            "usens_god" = "God",
@@ -2123,7 +2273,7 @@ exist_bar(country = "Ecuador_Amazon", version = 2,
 #----------------------
 ## BOTH VERSIONS COMBINED BY QUESTION TYPE 
 ec_usens_combined <- df_usens %>%
-  filter(ont_ctry_name == "Ecuador_Amazon") %>%
+  filter(ont_ctry_name == "Ecuador") %>%
   select(usens_flu, usens_wen, usens_mug, usens_par, usens_spd,
          usens_cnc, usens_god, usens_tbl, usens_okw, usens_ram) %>%
   mutate(across(everything(), as.numeric)) %>%
@@ -2170,7 +2320,7 @@ ec_usens_combined %>%
 
 ```{r}
 # Version 1 -- 21 participants
-exist_bar(country = "Peru_Amazon", version = 1, 
+exist_bar(country = "Peru", version = 1, 
           cols = c("usens_ysh", "usens_par", "usens_god", "usens_tbl", "usens_njt", "usens_cha", "usens_cnc"), 
           col_names = c("usens_ysh" = "Mahua Yoshin\n(bad spirit)",  
                         "usens_par" = "Intestinal Parasites",  
@@ -2184,7 +2334,7 @@ exist_bar(country = "Peru_Amazon", version = 1,
 
 
 # Version 2 -- 19 participants
-exist_bar(country = "Peru_Amazon", version = 2, 
+exist_bar(country = "Peru", version = 2, 
           cols = c("usens_grm", "usens_ron", "usens_taz", "usens_oni", "usens_smn", "usens_dlp"), 
           col_names = c("usens_grm" = "Germs", 
                            "usens_ron" = "Ronin\n(Anaconda)",
@@ -2200,7 +2350,7 @@ exist_bar(country = "Peru_Amazon", version = 2,
 # BOTH VERSIONS COMBINED
 
 peru_usens_combined <- df_usens %>%
-  filter(ont_ctry_name == "Peru_Amazon") %>%
+  filter(ont_ctry_name == "Peru") %>%
   select(usens_ysh, usens_par, usens_god, usens_tbl, usens_njt, usens_cha, usens_cnc,
          usens_grm, usens_ron, usens_taz, usens_oni, usens_smn, usens_dlp) %>%
   mutate(across(everything(), as.numeric)) %>%
