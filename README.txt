@@ -1,4 +1,4 @@
-This repository contains data and analyses to accompany the paper we are currently calling Ontology Judgments Across CulturesThe files: - ontology_forpub.Rmd contains the analyses used to generate the results for the paper - ontology_forpub.html is a knitted version of the Rmd file 
+This repository contains data and analyses to accompany the paper called Ontology Judgments Across CulturesThe files: - ontology_forpub.Rmd contains the analyses used to generate the results for the paper - ontology_forpub.html is a knitted version of the Rmd file 
 - ontology_forpub.nb.html is a knitted notebook version of the Rmd file - ontology_data.xlsx contains the data analyzed in the paper and is loaded into ontology_forpub.Rmd- custom_functions.R contains custom functions for making plots and also contains some data wrangling. It is loaded into ontology_forpub.RmdThe analysis file uses the following R packages in these versions:- R version 4.4.1 (2024-06-14)- tidyverse_2.0.0- readxl 1.4.3
 - forcats 1.0.0
 - RColorBrewer 1.1.3
