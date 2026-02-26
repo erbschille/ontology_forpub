@@ -280,7 +280,7 @@ df_ext_usens_conf <- df_ext_usens_conf %>%
     )
 ```
 
-Graphing Figure 1
+Graphing Figure 1--revised version does not include fictional objects
 
 ```{r, fig.width=15}
 conf_colors <- (RColorBrewer::brewer.pal(7, "RdYlBu"))
@@ -289,6 +289,7 @@ conf_colors <- (RColorBrewer::brewer.pal(7, "RdYlBu"))
 df_ext_usens_conf %>% 
   filter(!is.na(conf_dir_text)) %>% 
   mutate(category = factor(category, levels = c("Ordinary", "Scientific", "Supernatural", "Fictional"))) %>%
+  filter(category != "Fictional") %>%
   ggplot(aes(x = category, fill = conf_dir_text)) +  
   geom_bar(position = "fill") +  # Stacked proportions
   # geom_text(stat = "count", aes(label = after_stat(count)),
@@ -317,11 +318,15 @@ df_ext_usens_conf %>%
 
 Models predicting confidence x existence scores by category with separate regressions for each country. The pairwise contrasts here showing ordinary vs. supernatural and scientific vs. supernatural are what make up Table 2. Full results are reported in Appendix C. 
 
+Revised version also removes fictional objects
+
 ```{r}
 # 1 regression per country (4 total) where response is predicted by category
 
 # US
-m.us <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf, ont_ctry_name == "US"))
+m.us <- lmer(conf_dir ~ question_type + (1|ont_subj), 
+             data = filter(df_ext_usens_conf %>% filter(category != "Fictional"), 
+                           ont_ctry_name == "US"))
 summary(m.us)
 
 ##pairwise contrasts
@@ -329,7 +334,9 @@ emm.us <- emmeans(m.us, ~ question_type)
 contrast(emm.us, method = "pairwise", adjust = "none")
 
 # Ghana
-m.ghana <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf, ont_ctry_name == "Ghana"))
+m.ghana <- lmer(conf_dir ~ question_type + (1|ont_subj), 
+                data = filter(df_ext_usens_conf %>% filter(category != "Fictional"), 
+                              ont_ctry_name == "Ghana"))
 summary(m.ghana)
 
 ##pairwise contrasts
@@ -337,7 +344,9 @@ emm.ghana <- emmeans(m.ghana, ~ question_type)
 contrast(emm.ghana, method = "pairwise", adjust = "none")
 
 # Ecuador
-m.ecuador <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf, ont_ctry_name == "Ecuador"))
+m.ecuador <- lmer(conf_dir ~ question_type + (1|ont_subj), 
+                  data = filter(df_ext_usens_conf %>% filter(category != "Fictional"), 
+                                ont_ctry_name == "Ecuador"))
 summary(m.ecuador)
 
 ##pairwise contrasts
@@ -345,7 +354,9 @@ emm.ecuador <- emmeans(m.ecuador, ~ question_type)
 contrast(emm.ecuador, method = "pairwise", adjust = "none")
 
 # Peru
-m.peru <- lmer(conf_dir ~ question_type + (1|ont_subj), data = filter(df_ext_usens_conf, ont_ctry_name == "Peru"))
+m.peru <- lmer(conf_dir ~ question_type + (1|ont_subj), 
+               data = filter(df_ext_usens_conf %>% filter(category != "Fictional"), 
+                             ont_ctry_name == "Peru"))
 summary(m.peru)
 
 ##pairwise contrasts
@@ -358,7 +369,8 @@ Model predicting confidence x existence scores by category pooling across non-US
 
 ```{r}
 #combinging non us countries
-m.non.us <- lmer(conf_dir ~ question_type + (1|ont_ctry_name/ont_subj), data = filter(df_ext_usens_conf, ont_ctry_name != "US"))
+m.non.us <- lmer(conf_dir ~ question_type + (1|ont_ctry_name/ont_subj), 
+                 data = filter(df_ext_usens_conf, ont_ctry_name != "US") %>% filter(category != "Fictional"))
 summary(m.non.us)
 
 ##pairwise contrasts
@@ -395,6 +407,8 @@ summary(m.mug.peru)
 ```
 
 # Figure 2 & Accompanying Analyses
+
+For revised paper, Fig 2 now does not include Fictional objects
 
 ```{r, fig.width=15}
 data_long_comm <- df %>%
@@ -469,6 +483,7 @@ data_long_comm <- df %>%
 data_long_comm %>%
   mutate(category = factor(category, levels = c("Ordinary", "Scientific", "Supernatural", "Fictional")), 
          ont_ctry_name = factor(ont_ctry_name, levels = levels_country)) %>%
+  filter(category != "Fictional") %>%
   ggplot(aes(x = category, fill = response_txt)) +  
   geom_bar(position = "fill") +  # Stacked proportions
   # geom_text(stat = "count", aes(label = after_stat(count)),   
@@ -502,7 +517,9 @@ Models predicting "Can people communicate with X?" responses by category. The pa
 # I want 1 regression per country (4 total) where response is predicted by category
 
 # US
-m.comm.us <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_comm, ont_ctry_name == "US"))
+m.comm.us <- lmer(response ~ category + (1|ont_subj), 
+                  data = filter(data_long_comm, ont_ctry_name == "US") %>% 
+                    filter(category != "Fictional"))
 summary(m.comm.us)
 
 ##pairwise contrasts
@@ -510,7 +527,9 @@ emm.comm.us <- emmeans(m.comm.us, ~ category)
 contrast(emm.comm.us, method = "pairwise", adjust = "none")
 
 # Ghana
-m.comm.ghana <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_comm, ont_ctry_name == "Ghana"))
+m.comm.ghana <- lmer(response ~ category + (1|ont_subj), 
+                     data = filter(data_long_comm, ont_ctry_name == "Ghana") %>% 
+                       filter(category != "Fictional"))
 summary(m.comm.ghana)
 
 ##pairwise contrasts
@@ -518,7 +537,9 @@ emm.comm.ghana <- emmeans(m.comm.ghana, ~ category)
 contrast(emm.comm.ghana, method = "pairwise", adjust = "none")
 
 # Ecuador
-m.comm.ecuador <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_comm, ont_ctry_name == "Ecuador"))
+m.comm.ecuador <- lmer(response ~ category + (1|ont_subj), 
+                       data = filter(data_long_comm, ont_ctry_name == "Ecuador") %>% 
+                         filter(category != "Fictional"))
 summary(m.comm.ecuador)
 
 ##pairwise contrasts
@@ -526,7 +547,9 @@ emm.comm.ecuador <- emmeans(m.comm.ecuador, ~ category)
 contrast(emm.comm.ecuador, method = "pairwise", adjust = "none")
 
 # Peru
-m.comm.peru <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_comm, ont_ctry_name == "Peru"))
+m.comm.peru <- lmer(response ~ category + (1|ont_subj), 
+                    data = filter(data_long_comm, ont_ctry_name == "Peru") %>% 
+                      filter(category != "Fictional"))
 summary(m.comm.peru)
 
 ##pairwise contrasts
@@ -609,6 +632,7 @@ data_long_spec <- df %>%
 data_long_spec %>%
   mutate(category = factor(category, levels = c("Ordinary", "Scientific", "Supernatural", "Fictional")), 
          ont_ctry_name = factor(ont_ctry_name, levels = levels_country)) %>%
+  filter(category != "Fictional") %>%
   ggplot(aes(x = category, fill = response_txt)) +  
   geom_bar(position = "fill") +  # Stacked proportions
   # geom_text(stat = "count", aes(label = after_stat(count)),   
@@ -640,7 +664,9 @@ Models predicting "Can X be experienced by anyone or only by specific people?" r
 # 1 regression per country (4 total) where response is predicted by category
 
 # US
-m.spec.us <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_spec, ont_ctry_name == "US"))
+m.spec.us <- lmer(response ~ category + (1|ont_subj), 
+                  data = filter(data_long_spec, ont_ctry_name == "US") %>% 
+                    filter(category != "Fictional"))
 summary(m.spec.us)
 
 ##pairwise contrasts
@@ -648,7 +674,9 @@ emm.spec.us <- emmeans(m.spec.us, ~ category)
 contrast(emm.spec.us, method = "pairwise", adjust = "none")
 
 # Ecuador
-m.spec.ecuador <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_spec, ont_ctry_name == "Ecuador"))
+m.spec.ecuador <- lmer(response ~ category + (1|ont_subj), 
+                       data = filter(data_long_spec, ont_ctry_name == "Ecuador") %>% 
+                         filter(category != "Fictional"))
 summary(m.spec.ecuador)
 
 ##pairwise contrasts
@@ -656,7 +684,9 @@ emm.spec.ecuador <- emmeans(m.spec.ecuador, ~ category)
 contrast(emm.spec.ecuador, method = "pairwise", adjust = "none")
 
 # Peru
-m.spec.peru <- lmer(response ~ category + (1|ont_subj), data = filter(data_long_spec, ont_ctry_name == "Peru"))
+m.spec.peru <- lmer(response ~ category + (1|ont_subj), 
+                    data = filter(data_long_spec, ont_ctry_name == "Peru") %>%
+                      filter(category != "Fictional"))
 summary(m.spec.peru)
 
 ##pairwise contrasts
@@ -732,6 +762,7 @@ combined_sens <- combined_sens %>%
 
 # Plot with reordered bars -- x axis is country
 combined_sens %>%
+  filter(question_type != "Fictional") %>%
   ggplot(aes(x = ont_ctry_name, y = proportion_yes, fill = question_type)) +
   geom_col(position = position_dodge(width = 0.8), width = 0.7) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
@@ -822,6 +853,7 @@ combined_usens <- combined_usens %>%
 combined_usens %>%
   mutate(
     question_type = factor(question_type, levels = levels_type)) %>%
+  filter(question_type != "Fictional") %>%
   ggplot(aes(x = ont_ctry_name, y = proportion_yes, fill = question_type)) +
   geom_col(position = position_dodge(width = 0.8), width = 0.7) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
@@ -854,7 +886,7 @@ Models predicting confidence x existence scores with consensus and sensory exper
 # for more details on consensus score calculation, see the data frame where it is created in Data Wrangling 
 
 m.conf <- lmer(conf_dir ~ consensus_excl_self + usens_response + (1 | ont_ctry_name/ont_subj), 
-              data = df_ext_usens_conf)
+              data = df_ext_usens_conf %>% filter(category != "Fictional"))
 summary(m.conf)
 
 # making Table 3
@@ -904,6 +936,7 @@ conf_colors <- (RColorBrewer::brewer.pal(9, "RdYlBu"))
 df_ext_usens_conf_ALT %>% 
   filter(!is.na(conf_dir_text), !is.na(category)) %>% 
   mutate(category = factor(category, levels = c("Ordinary", "Scientific", "Supernatural", "Fictional"))) %>%
+  filter(category != "Fictional") %>%
   ggplot(aes(x = category, fill = conf_dir_text)) +  
   geom_bar(position = "fill") +  # Stacked proportions
   # geom_text(stat = "count", aes(label = after_stat(count)),   
